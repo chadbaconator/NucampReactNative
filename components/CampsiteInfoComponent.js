@@ -3,7 +3,7 @@ import { Text, View, ScrollView, FlatList, Modal, Button, StyleSheet, } from 're
 import { Card, Icon, Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
-import { postFavorite } from '../redux/ActionCreators';
+import { postFavorite, postComment } from '../redux/ActionCreators';
 
 
 const mapStateToProps = state => {
@@ -15,7 +15,8 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = {
-    postFavorite: campsiteId => (postFavorite(campsiteId))
+    postFavorite: campsiteId => (postFavorite(campsiteId)),
+    postComment: campsiteId => (postComment(campsiteId, rating, author, text))
 };
 
 function RenderCampsite(props) {
@@ -112,7 +113,7 @@ class CampsiteInfo extends Component {
     }
 
     handleComment(campsiteId) {
-        console.log(JSON.stringify(this.state));
+        postComment(campsiteId, rating, author, text);
         this.toggleModal();
     }
 
@@ -145,7 +146,7 @@ class CampsiteInfo extends Component {
                     <View style={styles.modal}>
                         <Rating 
                             showRating
-                            startingValue={this.rating}
+                            startingValue={this.state.rating}
                             imageSize={40}
                             onFinishRating={(rating)=>this.setState({rating: rating})} 
                             style={{paddingVertical: 10}}

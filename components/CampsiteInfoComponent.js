@@ -16,7 +16,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
     postFavorite: campsiteId => (postFavorite(campsiteId)),
-    postComment: campsiteId => (postComment(campsiteId, rating, author, text))
+    postComment: (campsiteId, rating, author,text) => (postComment(campsiteId, rating, author, text))
 };
 
 function RenderCampsite(props) {
@@ -63,15 +63,11 @@ function RenderComments({comments}) {
             <View style={{margin: 10}}>
                 <Text style={{fontSize: 14}}>{item.text}</Text>
                 <Rating 
-                    style={{alignItems: 'flex-start',
-                            paddingVertical: '5%'
-                        }}
                     startingValue={item.rating}
                     imageSize={10}
                     readonly
-                >
-                    {item.rating} Stars
-                </Rating>
+                    style={{alignItems: 'flex-start', paddingVertical: '5%'}}
+                />
                 <Text style={{fontSize: 12}}>{`-- ${item.author}, ${item.date}`}</Text>
             </View>
         );
@@ -113,7 +109,7 @@ class CampsiteInfo extends Component {
     }
 
     handleComment(campsiteId) {
-        postComment(campsiteId, rating, author, text);
+        this.props.postComment(campsiteId, this.state.rating, this.state.author, this.state.text);
         this.toggleModal();
     }
 
@@ -138,51 +134,49 @@ class CampsiteInfo extends Component {
                     onShowModal={() => this.toggleModal()}
                 />
                 <RenderComments comments={comments} />
-                <Modal
+                <Modal 
                     animationType={'slide'}
                     transparent={false}
                     visible={this.state.showModal}
                     onRequestClose={() => this.toggleModal()}>
                     <View style={styles.modal}>
-                        <Rating 
+                        <Rating
                             showRating
                             startingValue={this.state.rating}
                             imageSize={40}
-                            onFinishRating={(rating)=>this.setState({rating: rating})} 
+                            onFinishRating={rating => this.setState({rating: rating})}
                             style={{paddingVertical: 10}}
                         />
-                        <Input 
+                        <Input
                             placeholder='Author'
-                            leftIcon={{ type: 'font-awesome', name: 'user-o' }}
-                            leftIconContainerStyle={{ paddingRight: 10 }}
-                            onChangeText={(value)=>this.setState({author: value})} 
-                            
+                            leftIcon={{type: 'font-awesome', name: 'user-o'}}
+                            leftIconContainerStyle={{paddingRight: 10}}
+                            onChangeText={author => {this.setState({author: author})}}
+                            value={this.state.author}
                         />
-                        <Input 
+                        <Input
                             placeholder='Comment'
-                            leftIcon={{ type: 'font-awesome', name: 'comment-o' }}
-                            leftIconContainerStyle={{ paddingRight: 10 }}
-                            onChangeText={(value)=>this.setState({text: value})} 
-                            
+                            leftIcon={{type: 'font-awesome', name: 'comment-o'}}
+                            leftIconContainerStyle={{paddingRight: 10}}
+                            onChangeText={text => {this.setState({text: text})}}
+                            value={this.state.text}
                         />
-
-                        <View style={{margin: 10}}>
-                            <Button 
-                            onPress={() => {
-                                this.handleComment();
-                                this.resetForm();
-                            }}
-                            color='#5637DD'
-                            title='Submit'
-                            />
-                        </View>
-
                         <View style={{margin: 10}}>
                             <Button
                                 onPress={() => {
-                                    this.toggleModal();
+                                    this.handleComment(campsiteId);
                                     this.resetForm();
                                 }}
+                                color='#5637DD'
+                                title='Submit'
+                            />
+                        </View>
+                        <View style={{margin: 10 }}>
+                            <Button
+                                onPress={() => {
+                                    this.toggleModal();
+                                    this.resetForm();}
+                                }
                                 color='#808080'
                                 title='Cancel'
                             />
